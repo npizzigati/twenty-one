@@ -1,0 +1,32 @@
+@startuml
+scale 2
+
+Player <|-- Dealer
+
+class Card {
+  suit : Symbol
+  value : String
+}
+
+class Player {
+  hand[] : Card
+  hit?()
+  bust?()
+  twenty_one?()
+}
+
+class Dealer {
+  deck[] : Card
+  deal()
+  hit()
+} 
+
+class Deck {
+  cards[] : Card
+  shuffle()
+}
+
+
+
+
+@enduml
