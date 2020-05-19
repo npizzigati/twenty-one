@@ -4,7 +4,7 @@ require 'pry'
 SUITS = [:hearts, :spades, :clubs, :diamonds]
 RANKS = ('2'..'10').to_a + %w(J Q K A)
 
-class Person
+class Participant
   attr_accessor :total
   attr_reader :name
 
@@ -43,7 +43,7 @@ class Person
   end
 end
 
-class Player < Person
+class Player < Participant
   attr_accessor :bet, :money
 
   def initialize(display)
@@ -62,7 +62,7 @@ class Player < Person
   end
 end
 
-class Dealer < Person
+class Dealer < Participant
   def initialize(display)
     super
     @deck = Deck.new
