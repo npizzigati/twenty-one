@@ -371,16 +371,8 @@ class Display
       setpos(@coords.first, @coords.last + columns)
     end
 
-    def move_left(columns)
-      setpos(@coords.first, @coords.last - columns)
-    end
-
     def move_down(rows)
       setpos(@coords.first + rows, @coords.last)
-    end
-
-    def move_up(rows)
-      setpos(@coords.first - rows, @coords.last)
     end
   end
 end
