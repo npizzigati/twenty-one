@@ -288,7 +288,7 @@ class Display
                              check: /^\d{1,3}$/,
                              warning: 'Invalid bet')
         input = input.to_i
-        if input <= max
+        if input <= max && input > 0
           @warning_cursor.clear if @warning_visible
           return input
         end
