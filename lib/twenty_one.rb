@@ -81,7 +81,7 @@ class Dealer < Participant
   def initialize(display)
     super
     @deck = Deck.new
-    @deck.shuffle!
+    shuffle_deck
     @name = 'Dealer'
   end
 
@@ -96,6 +96,10 @@ class Dealer < Participant
 
   def hit?
     @total < DEALER_STAY_VALUE
+  end
+
+  def shuffle_deck
+    @deck.shuffle!
   end
 
   def reveal_hole_card
@@ -146,7 +150,6 @@ class Deck
   end
 end
 
-
 class TwentyOneGame
   def initialize
     @display = Display.new
@@ -188,6 +191,7 @@ class TwentyOneGame
     [@dealer, @player].each do |person|
       person.clear_hand
     end
+    @dealer.shuffle_deck
     @display.clear_table
   end
 
