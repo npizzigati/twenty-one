@@ -6,6 +6,11 @@ require 'pry'
 SUITS = [:hearts, :spades, :clubs, :diamonds]
 RANKS = ('2'..'10').to_a + %w(J Q K A)
 DEALING_DELAY = 0.6
+STARTING_PLAYER_MONEY = 20
+DEALER_STAY_VALUE = 17
+ACE_SOFT_VALUE = 11
+ACE_HARD_VALUE = 1
+FACE_CARD_VALUE = 10
 
 class Participant
   attr_accessor :total, :name
@@ -35,7 +40,7 @@ class Participant
     num_of_scores = scores.size
 
     while scores.sum > 21 && index < num_of_scores
-      scores[index] = 1 if scores[index] == 11
+      scores[index] = ACE_HARD_VALUE if scores[index] == ACE_SOFT_VALUE
       index += 1
     end
 
@@ -57,7 +62,7 @@ class Player < Participant
 
   def initialize(display)
     super
-    @money = 20
+    @money = STARTING_PLAYER_MONEY
     @bet = nil
     @name = retrieve_name
   end
@@ -67,7 +72,7 @@ class Player < Participant
   end
 
   def hit?
-    return false if @total > 20
+    return false if @total >= 21
     @display.input_char('Press h to hit or s to stand', %w(h s)) == 'h'
   end
 end
@@ -89,7 +94,7 @@ class Dealer < Participant
   end
 
   def hit?
-    @total < 17
+    @total < DEALER_STAY_VALUE
   end
 
   def reveal_hole_card
@@ -107,12 +112,12 @@ class Card
 
   def soft_value
     case @rank
-    when ('1'..'9')
+    when ('1'..'10')
       @rank.to_i
     when 'A'
-      11
+      ACE_SOFT_VALUE
     else
-      10
+      FACE_CARD_VALUE
     end
   end
 end
