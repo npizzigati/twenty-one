@@ -152,6 +152,10 @@ class Display
     cursor.move_right(visual_card.first.size + DISTANCE_BETWEEN_CARDS_IN_HAND)
   end
 
+  def show_dealing_message
+    @message_cursor.print_here('Dealing...', clear_line: true)
+  end
+
   def reveal_dealer_hole_card(card)
     cursor = Cursor.new(*DEALER_CARDS_START)
     visual_card = assemble_visual_card(card.suit, card.rank)

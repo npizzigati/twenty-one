@@ -88,6 +88,7 @@ class Dealer < Participant
   def deal(recipient)
     # delay of 1 second between cards dealt to dealer when hitting
     # sleep 1 if num_of_cards == 1 && recipient == self
+    @display.show_dealing_message
     card = @deck.pop
     sleep DEALING_DELAY
     recipient << card
@@ -159,9 +160,9 @@ class TwentyOneGame
       @round_winner = nil
       play_round
       break if @player.money == 0 || stop_playing?
-      
+
       reset_table
-    end 
+    end
 
     @display.goodbye(@player.money)
   end
