@@ -1,8 +1,6 @@
 require 'io/console'
 require_relative 'display.rb'
 
-require 'pry'
-
 SUITS = [:hearts, :spades, :clubs, :diamonds]
 RANKS = ('2'..'10').to_a + %w(J Q K A)
 DEALING_DELAY = 0.6
