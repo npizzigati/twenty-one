@@ -84,8 +84,6 @@ class Dealer < Participant
   end
 
   def deal(recipient)
-    # delay of 1 second between cards dealt to dealer when hitting
-    # sleep 1 if num_of_cards == 1 && recipient == self
     @display.show_dealing_message
     card = @deck.pop
     sleep DEALING_DELAY
