@@ -244,7 +244,7 @@ class Display
               elsif dealer_total > 21
                 'Dealer busts. '
               else
-                "You have a #{player_total} and dealer has a " \
+                "You have #{player_total} and the dealer has " \
                 "#{dealer_total}. "
               end
     @message_cursor.print_here(message, clear_line: true,
