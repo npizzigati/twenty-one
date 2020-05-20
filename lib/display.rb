@@ -90,6 +90,8 @@ class Display
       any_key_to_continue
     end
       @message_cursor.print_here('Thanks for playing! ' \
+                                 'You\'re walking away with ' \
+                                 "$#{money}. " \
                                  'Press any key to exit.',
                                  clear_line: true)
       input_char('')
