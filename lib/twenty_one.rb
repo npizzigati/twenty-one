@@ -27,7 +27,7 @@ class Participant
     @hand << card
     update_total
 
-    if @hand.size == 1 and klass == Dealer
+    if @hand.size == 1 && klass == Dealer
       @display.print_card(card, klass, face_down: true)
     else
       @display.print_card(card, klass)
@@ -35,7 +35,7 @@ class Participant
   end
 
   def update_total
-    scores = @hand.map { |card| card.soft_value }
+    scores = @hand.map(&:soft_value)
     index = 0
     num_of_scores = scores.size
 
