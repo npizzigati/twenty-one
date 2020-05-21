@@ -220,6 +220,15 @@ class TwentyOneGame
     end
   end
 
+  def show_outcome
+    if player.bust?
+      @display.print_bust(:player)
+    elsif dealer.bust?
+      @display.print_bust(:dealer)
+    else
+    @display.print_scores(@player.total, @dealer.total)
+  end
+
   def deal_initial_cards
     2.times do
       @dealer.deal(@player)
