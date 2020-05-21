@@ -188,17 +188,30 @@ class TwentyOneGame
     @display.clear_table
   end
 
-  def process_outcome
-    @display.print_score_outcome(@player.total, @dealer.total)
+  def process_bet
+    if @round_winner == :player
+      @player.money += @player.bet
+    elsif @round_winner == :dealer
+      @player.money -= @player.bet
+    end
+    @display.show_money(@player.money)
+  end
+
+  def determine_winner
     set_busted_totals_to_zero
     if @player.total > @dealer.total
       @round_winner = :player
-      @player.money += @player.bet
     elsif @dealer.total > @player.total
       @round_winner = :dealer
-      @player.money -= @player.bet
     end
-    @display.print_winner(@round_winner)
+  end
+
+  def prepare_round
+    @round_winner = nil
+    @display.show_money(@player.money)
+    @player.bet = @display.retrieve_bet(@player.money)
+    @display.prepare_table(@player.name)
+    deal_initial_cards
   end
 
   def set_busted_totals_to_zero
