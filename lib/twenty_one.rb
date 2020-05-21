@@ -169,26 +169,17 @@ class TwentyOneGame
   end
 
   def stop_playing?
-    @display.retrieve_continue_playing_response == 'n'
+    !@display.continue_playing?
   end
 
   def play_round
     @dealer.deal(@player) while @player.hit?
-    @display.print_player_score(@player.total) unless @player.busted?
     @dealer.reveal_hole_card
-    unless @player.busted?
+    unless player.busted?
       @dealer.deal(@dealer) while @dealer.hit?
-    end
-    process_outcome
-    @display.show_money(@player.money)
-  end
-
-  def prepare_round
-    @round_winner = nil
-    @display.show_money(@player.money)
-    @player.bet = @display.retrieve_bet(@player.money)
-    @display.prepare_table(@player.name)
-    deal_initial_cards
+    determine_winner
+    process_bet
+    show_outcome
   end
 
   def reset_table
