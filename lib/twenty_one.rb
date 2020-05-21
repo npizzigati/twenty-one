@@ -9,6 +9,7 @@ DEALER_STAY_VALUE = 17
 ACE_SOFT_VALUE = 11
 ACE_HARD_VALUE = 1
 FACE_CARD_VALUE = 10
+CARD_MAXIMUM = 21
 
 class Participant
   attr_accessor :total, :name
@@ -37,7 +38,7 @@ class Participant
     index = 0
     num_of_scores = scores.size
 
-    while scores.sum > 21 && index < num_of_scores
+    while scores.sum > CARD_MAXIMUM && index < num_of_scores
       scores[index] = ACE_HARD_VALUE if scores[index] == ACE_SOFT_VALUE
       index += 1
     end
@@ -51,7 +52,7 @@ class Participant
   end
 
   def busted?
-    @total > 21
+    @total > CARD_MAXIMUM
   end
 end
 
@@ -70,7 +71,7 @@ class Player < Participant
   end
 
   def hit?
-    return false if @total >= 21
+    return false if @total >= CARD_MAXIMUM
     @display.input_char('Press h to hit or s to stand', %w(h s)) == 'h'
   end
 end
