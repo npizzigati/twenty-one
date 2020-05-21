@@ -292,7 +292,7 @@ class Display
           @warning_cursor.clear if @warning_visible
           return input
         end
-        print_warning "Maximum bet is #{max}"
+        print_warning "Bet must be between 1 and #{max}"
       end
     end
   end
