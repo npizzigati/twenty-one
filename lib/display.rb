@@ -1,3 +1,5 @@
+require 'pry'
+
 class Display
   # ANSI escape codes
   # Properties
@@ -83,15 +85,15 @@ class Display
     any_key_to_continue
   end
 
-  def goodbye(money)
-    if money == 0
+  def goodbye(player)
+    if player.money == 0
       @message_cursor.print_here('You\'re out of money. ',
                                  advance: true)
       any_key_to_continue
     end
-    @message_cursor.print_here('Thanks for playing! ' \
+    @message_cursor.print_here("Thanks for playing, #{player.name}! " \
                                 'You\'re walking away with ' \
-                                "$#{money}. " \
+                                "$#{player.money}. " \
                                 'Press any key to exit.',
                                 clear_line: true)
     input_char('')
@@ -220,41 +222,39 @@ class Display
     end
   end
 
-  def print_player_busted
-    @message_cursor.print_here('You bust! ')
-  end
-
   def any_key_to_continue
     input_char('Press any key to continue.')
   end
 
-  def print_player_score(player_total)
-    message = "Your hand total is #{player_total}. "
+  def print_busted(participant)
+    name = participant.class == Player ? "You" : "Dealer"
+    message = "#{name} busted! "
+    @message_cursor.print_here(message, clear_line: true,
+                               advance: true)
+  end
+
+  def print_player_score(player)
+    message = "You have #{player.total}. "
     @message_cursor.print_here(message, clear_line: true,
                                advance: true)
     any_key_to_continue
   end
 
-  def print_score_outcome(player_total, dealer_total)
-    message = if player_total > 21
-                'You bust! '
-              elsif dealer_total > 21
-                'Dealer busts. '
-              else
-                "You have #{player_total} and the dealer has " \
-                "#{dealer_total}. "
-              end
+  def print_scores(player, dealer)
+    message = "You have #{player.total} and the dealer has " \
+              "#{dealer.total}. "
     @message_cursor.print_here(message, clear_line: true,
                                advance: true)
   end
 
   def print_winner(winner)
-    hide_terminal_cursor
-    case winner
-    when :dealer
-      @message_cursor.print_here('Dealer wins the hand. ', advance: true)
-    when :player
-      @message_cursor.print_here('You win the hand! ', advance: true)
+    if winner
+      message = if winner.class == Player
+                  'You win the hand! '
+                else
+                  'Dealer wins the hand! '
+                end
+      @message_cursor.print_here(message, advance: true)
     else
       @message_cursor.print_here('The hand is a tie! ', advance: true)
     end

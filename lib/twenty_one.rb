@@ -50,10 +50,6 @@ class Participant
     @hand = []
     @total = 0
   end
-
-  def busted?
-    @total > CARD_MAXIMUM
-  end
 end
 
 class Player < Participant
@@ -71,8 +67,7 @@ class Player < Participant
   end
 
   def hit?
-    return false if @total >= CARD_MAXIMUM
-
+    return false if @total == 21
     @display.input_char('Press h to hit or s to stand', %w(h s)) == 'h'
   end
 end
@@ -165,7 +160,7 @@ class TwentyOneGame
       reset_table
     end
 
-    @display.goodbye(@player.money)
+    @display.goodbye(@player)
   end
 
   def stop_playing?
@@ -173,13 +168,25 @@ class TwentyOneGame
   end
 
   def play_round
-    @dealer.deal(@player) while @player.hit?
+    participant_turn(@player)
+    @display.print_player_score(@player) unless @busted
     @dealer.reveal_hole_card
-    unless player.busted?
-      @dealer.deal(@dealer) while @dealer.hit?
+    participant_turn(@dealer) unless @busted
     determine_winner
-    process_bet
     show_outcome
+    process_bet
+    @display.show_money(@player.money)
+  end
+
+  def participant_turn(participant)
+    while participant.hit?
+      @dealer.deal(participant)
+      if participant.total > CARD_MAXIMUM
+        @busted = participant
+        @display.print_busted(@busted)
+        break
+      end
+    end
   end
 
   def reset_table
@@ -189,24 +196,27 @@ class TwentyOneGame
   end
 
   def process_bet
-    if @round_winner == :player
+    if @round_winner == @player
       @player.money += @player.bet
-    elsif @round_winner == :dealer
+    elsif @round_winner == @dealer
       @player.money -= @player.bet
     end
-    @display.show_money(@player.money)
   end
 
   def determine_winner
-    set_busted_totals_to_zero
-    if @player.total > @dealer.total
-      @round_winner = :player
+    if @busted == @player
+      @round_winner = @dealer
+    elsif @busted == @dealer
+      @round_winner = @player
+    elsif @player.total > @dealer.total
+      @round_winner = @player
     elsif @dealer.total > @player.total
-      @round_winner = :dealer
+      @round_winner = @dealer
     end
   end
 
   def prepare_round
+    @busted = nil
     @round_winner = nil
     @display.show_money(@player.money)
     @player.bet = @display.retrieve_bet(@player.money)
@@ -221,12 +231,8 @@ class TwentyOneGame
   end
 
   def show_outcome
-    if player.bust?
-      @display.print_bust(:player)
-    elsif dealer.bust?
-      @display.print_bust(:dealer)
-    else
-    @display.print_scores(@player.total, @dealer.total)
+    @display.print_scores(@player, @dealer) unless @busted
+    @display.print_winner(@round_winner)
   end
 
   def deal_initial_cards
