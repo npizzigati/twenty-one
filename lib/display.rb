@@ -306,8 +306,8 @@ class Display
     STDOUT.write "\u001b[0;0H" # set cursor to home position
   end
 
-  def retrieve_continue_playing_response
-    input_char("Continue playing? (y/n)", %w(y n))
+  def continue_playing?
+    input_char("Continue playing? (y/n)", %w(y n)) == 'y'
   end
 
   def close
