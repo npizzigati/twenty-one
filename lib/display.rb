@@ -1,9 +1,7 @@
-require 'pry'
-
 class Display
   # ANSI escape codes
   # Properties
-  MESSAGE_COLOR = "\u001b[40m" # black
+  MSG_COLOR = "\u001b[40m" # black
   WARNING_COLOR = "\u001b[36m" # cyan
   MONEY_COLOR = "\u001b[36m" # cyan
   HIGHLIGHT = "\e[1m"
@@ -42,7 +40,7 @@ class Display
   # Blank card pattern
   MEDIUM_SHADE = "\u2592"
 
-  #Coordinates of suit symbols and rank numbers on visual card
+  # Coordinates of suit symbols and rank numbers on visual card
   SUIT_COORDS = [[2, 1], [4, 5], [6, 9]]
   RANK_COORDS = [[1, 1], [7, 9]]
 
@@ -87,15 +85,14 @@ class Display
 
   def goodbye(player)
     if player.money == 0
-      @message_cursor.print_here('You\'re out of money. ',
-                                 advance: true)
+      @message_cursor.print_here('You\'re out of money. ', advance: true)
       any_key_to_continue
     end
     @message_cursor.print_here("Thanks for playing, #{player.name}! " \
-                                'You\'re walking away with ' \
-                                "$#{player.money}. " \
-                                'Press any key to exit.',
-                                clear_line: true)
+                               'You\'re walking away with ' \
+                               "$#{player.money}. " \
+                               'Press any key to exit.',
+                               clear_line: true)
     input_char('')
   end
 
@@ -172,31 +169,31 @@ class Display
     end
   end
 
-  def echo_on(&block)
+  def string_entry_setup(&block)
     STDIN.echo = true
     show_terminal_cursor
     block.call
   ensure
     STDIN.echo = false
     hide_terminal_cursor
+    @warning_cursor.clear if @warning_visible
   end
 
   def input_string(prompt, check: nil, warning: 'Invalid input')
-    @message_cursor.print_here prompt, clear_line: true
+    @message_cursor.print_here(prompt, clear_line: true)
     loop do
       input = gets.chomp
       if check.match?(input)
-        @warning_cursor.clear if @warning_visible
         return input
       end
 
       print_warning warning
-      @message_cursor.print_here prompt, clear_line: true
+      @message_cursor.print_here(prompt, clear_line: true)
     end
   end
 
   def input_char(prompt, options = nil)
-    @message_cursor.print_here prompt
+    @message_cursor.print_here(prompt)
     loop do
       input = STDIN.getch.downcase
       exit(1) if input == CTRL_C
@@ -206,7 +203,7 @@ class Display
         return input
       end
 
-      print_warning "Please enter #{joiner(options)}"
+      print_warning("Please enter #{joiner(options)}")
     end
   end
 
@@ -230,13 +227,13 @@ class Display
     name = participant.class == Player ? "You" : "Dealer"
     message = "#{name} busted! "
     @message_cursor.print_here(message, clear_line: true,
-                               advance: true)
+                                        advance: true)
   end
 
   def print_player_score(player)
     message = "You have #{player.total}. "
     @message_cursor.print_here(message, clear_line: true,
-                               advance: true)
+                                        advance: true)
     any_key_to_continue
   end
 
@@ -244,7 +241,7 @@ class Display
     message = "You have #{player.total} and the dealer has " \
               "#{dealer.total}. "
     @message_cursor.print_here(message, clear_line: true,
-                               advance: true)
+                                        advance: true)
   end
 
   def print_winner(winner)
@@ -264,8 +261,8 @@ class Display
     message = 'Please enter your name (only word characters ' \
               'allowed, up to 10 characters): '
     name = nil
-    echo_on do
-      name = input_string message, check: /^[\w]{1,10}$/
+    string_entry_setup do
+      name = input_string(message, check: /^[\w]{1,10}$/)
     end
 
     name
@@ -273,23 +270,18 @@ class Display
 
   def show_money(money)
     @chips_cursor.print_here('You have: $', clear_line: true,
-                             advance: true)
+                                            advance: true)
     @chips_cursor.print_here(money, color: MONEY_COLOR)
   end
 
   def retrieve_bet(max)
-    input = nil
-    echo_on do
+    string_entry_setup do
       loop do
         input = input_string("Enter your bet (dollar amount, without cents): $",
-                             check: /^\d{1,3}$/,
-                             warning: 'Invalid bet')
-        input = input.to_i
-        if input <= max && input > 0
-          @warning_cursor.clear if @warning_visible
-          return input
-        end
-        print_warning "Bet must be between 1 and #{max}"
+                             check: /^\d{1,3}$/, warning: 'Invalid bet').to_i
+        return input if input <= max && input > 0
+
+        print_warning("Bet must be between 1 and #{max}")
       end
     end
   end
@@ -297,7 +289,7 @@ class Display
   def print_warning(text)
     @warning_cursor.clear if @warning_visible
     sleep 0.08
-    @warning_cursor.print_here text, color: WARNING_COLOR
+    @warning_cursor.print_here(text, color: WARNING_COLOR)
     @warning_visible = true
   end
 
@@ -317,8 +309,8 @@ class Display
   end
 
   class Cursor
-    def initialize(y, x)
-      @coords = [y, x]
+    def initialize(y_coord, x_coord)
+      @coords = [y_coord, x_coord]
       @initial_coords = @coords
       @saved_position = []
     end
@@ -327,7 +319,7 @@ class Display
       @saved_position = @coords
     end
 
-    def print_here(text, clear_line: false, advance: false, color: MESSAGE_COLOR)
+    def print_here(text, clear_line: false, advance: false, color: MSG_COLOR)
       clear if clear_line == true
       move_to_point(*@coords)
       print_color(color) do
