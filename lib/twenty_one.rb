@@ -72,6 +72,7 @@ class Player < Participant
 
   def hit?
     return false if @total >= CARD_MAXIMUM
+
     @display.input_char('Press h to hit or s to stand', %w(h s)) == 'h'
   end
 end
@@ -157,7 +158,7 @@ class TwentyOneGame
     @dealer = Dealer.new(@display)
     @player = Player.new(@display)
     loop do
-      @round_winner = nil
+      prepare_round
       play_round
       break if @player.money == 0 || stop_playing?
 
@@ -172,32 +173,28 @@ class TwentyOneGame
   end
 
   def play_round
-    @display.show_money(@player.money)
-    @player.bet = @display.retrieve_bet(@player.money)
-    @display.prepare_table(@player.name)
-    deal_initial_cards
-
     @dealer.deal(@player) while @player.hit?
-    transition_to_dealer_turn
-    @dealer.deal(@dealer) while @dealer.hit? unless @player.busted?
+    @display.print_player_score(@player.total) unless @player.busted?
+    @dealer.reveal_hole_card
+    unless @player.busted?
+      @dealer.deal(@dealer) while @dealer.hit?
+    end
     process_outcome
     @display.show_money(@player.money)
   end
 
-  def reset_table
-    [@dealer, @player].each do |person|
-      person.clear_hand
-    end
-    @dealer.shuffle_deck
-    @display.clear_table
+  def prepare_round
+    @round_winner = nil
+    @display.show_money(@player.money)
+    @player.bet = @display.retrieve_bet(@player.money)
+    @display.prepare_table(@player.name)
+    deal_initial_cards
   end
 
-  def transition_to_dealer_turn
-    unless @player.busted?
-      @display.print_player_score(@player.total)
-      @display.any_key_to_continue
-    end
-    @dealer.reveal_hole_card
+  def reset_table
+    [@dealer, @player].each(&:clear_hand)
+    @dealer.shuffle_deck
+    @display.clear_table
   end
 
   def process_outcome

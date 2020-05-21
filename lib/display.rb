@@ -80,7 +80,7 @@ class Display
   def welcome
     @title_cursor.print_here 'TWENTY-ONE'
     @message_cursor.print_here 'Welcome to Twenty-one. ', advance: true
-    input_char 'Press any key to continue.'
+    any_key_to_continue
   end
 
   def goodbye(money)
@@ -229,15 +229,12 @@ class Display
   end
 
   def print_player_score(player_total)
-    message = if player_total > 21
-                'You bust! '
-              else
-                "Your hand total is #{player_total}. "
-              end
+    message = "Your hand total is #{player_total}. "
     @message_cursor.print_here(message, clear_line: true,
                                advance: true)
+    any_key_to_continue
   end
-  
+
   def print_score_outcome(player_total, dealer_total)
     message = if player_total > 21
                 'You bust! '
